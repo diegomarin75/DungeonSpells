@@ -1,0 +1,11 @@
+//Dungeon Spells console library
+set library=true
+
+//Public definitions
+.public
+
+//Console functions
+syscall<print>    void print(string line)
+syscall<println>  void println(string line)
+syscall<eprint>   void eprint(string line)
+syscall<eprintln> void eprintln(string line)

@@ -1,0 +1,51 @@
+//Dungeon Spells math library
+set library=true
+
+//Public definitions
+.public
+
+//Math constants
+const float e  =2.718281828459045
+const float pi =3.141592653589793
+const float phi=1.618033988749895
+
+//Math functions
+syscall<abschr>         char abs(char a)
+syscall<absshr>         short abs(short a)
+syscall<absint>         int abs(int a)
+syscall<abslon>         long abs(long a)
+syscall<absflo>         float abs(float a)
+syscall<minchr>         char min(char a,char b)
+syscall<minshr>         short min(short a,short b)
+syscall<minint>         int min(int a,int b)
+syscall<minlon>         long min(long a,long b)
+syscall<minflo>         float min(float a,float b)
+syscall<maxchr>         char max(char a,char b)
+syscall<maxshr>         short max(short a,short b)
+syscall<maxint>         int max(int a,int b)
+syscall<maxlon>         long max(long a,long b)
+syscall<maxflo>         float max(float a,float b)
+syscall<exp>            float exp(float x)
+syscall<ln>             float ln(float x)
+syscall<log>            float log(float x)
+syscall<logn>           float logn(float base,float number)
+syscall<pow>            float pow(float base,float exponent)
+syscall<sqrt>           float sqrt(float x)
+syscall<cbrt>           float cbrt(float x)
+syscall<sin>            float sin(float x)
+syscall<cos>            float cos(float x)
+syscall<tan>            float tan(float x)
+syscall<asin>           float asin(float x)
+syscall<acos>           float acos(float x)
+syscall<atan>           float atan(float x)
+syscall<sinh>           float sinh(float x)
+syscall<cosh>           float cosh(float x)
+syscall<tanh>           float tanh(float x)
+syscall<asinh>          float asinh(float x)
+syscall<acosh>          float acosh(float x)
+syscall<atanh>          float atanh(float x)
+syscall<ceil>           long ceil(float x)
+syscall<floor>          long floor(float x)
+syscall<round>          long round(float number,int decimals)
+syscall<seed>           void seed(float number)
+syscall<rand>           float rand()

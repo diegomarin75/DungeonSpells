@@ -1,0 +1,114 @@
+//Dungeon Spells standard library
+set library=true
+
+//Public definitions
+.public
+
+//Standard library version
+const string std_version="0.1"
+
+//Host systems
+enum oshost:
+  linux
+  windows
+:enum
+
+//system error codes
+enum errorcode:
+  ok=0
+  openreaderror
+  openwriteerror
+  readerror
+  writeerror
+  getsizeerror
+  readwhenclosed
+  writewhenclosed
+  filealreadyopenself
+  filealreadyopen
+  closealreadyclosed
+  freehandleropenfile
+  handlerforbidden
+:enum
+
+//Command line arguments
+syscall<getarg> string[] getargs()
+const string[] args=getargs()
+
+//Program exit/panic
+syscall<exit>           void exit()
+syscall<panic>          void panic(string message)
+
+//Generic
+syscall<delay>          void delay(int millisecs)
+syscall<error>          errorcode error()
+syscall<errortext>      string errortext(errorcode code)
+syscall<lasterror>      string lasterror()
+syscall<execute1>       bool execute(string execfile,string arg,ref string[] stdout,ref string[] stderr,bool redirect)
+                        bool execute(string execfile,string arg,ref string[] stdout,ref string[] stderr)
+                        bool execute(string execfile,string arg,ref string[] output)
+syscall<execute2>       bool execute(string execfile,string[] arg,ref string[] stdout,ref string[] stderr,bool redirect)
+                        bool execute(string execfile,string[] arg,ref string[] stdout,ref string[] stderr)
+                        bool execute(string execfile,string[] arg,ref string[] output)
+
+//System attributes
+oshost gethostsystem()
+string gethostsystemname()
+int getarchitecture()
+
+//Private definitions
+.private
+
+//Other
+syscall<hostsystem> int _gethostsystem()
+syscall<println>    void _println(string line)
+
+//Implementation
+.implem
+
+//Get hourst system name
+func oshost gethostsystem():
+  oshost hsystem
+  switch(_gethostsystem()):
+    when(1): hsystem=oshost.linux;   break
+    when(2): hsystem=oshost.windows; break
+  :switch
+  return hsystem
+:func
+
+//Get host system name
+func string gethostsystemname():
+  string name
+  switch(_gethostsystem()):
+    when(1): name="linux";   break
+    when(2): name="windows"; break
+  :switch
+  return name
+:func
+
+//Get system architecture
+func int getarchitecture():
+  return __architecture__
+:func
+
+//Execute external program (no redirection of sterr into stdout)
+func bool execute(string execfile,string arg,ref string[] stdout,ref string[] stderr):
+  return execute(execfile,arg,stdout,stderr,false)
+:func
+
+//Execute external program (redirects sterr into stdout)
+func bool execute(string execfile,string arg,ref string[] output):
+  string[] stderr=(string[]){}
+  return execute(execfile,arg,output,stderr,true)
+:func
+
+//Execute external program (no redirection of sterr into stdout)
+func bool execute(string execfile,string[] arg,ref string[] stdout,ref string[] stderr):
+  return execute(execfile,arg,stdout,stderr,false)
+:func
+
+//Execute external program (redirects sterr into stdout)
+func bool execute(string execfile,string[] arg,ref string[] output):
+  string[] stderr=(string[]){}
+  return execute(execfile,arg,output,stderr,true)
+:func
+

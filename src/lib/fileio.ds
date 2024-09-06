@@ -1,0 +1,335 @@
+//Dungeon Spells file I/O library
+set library=true
+
+//Libraries
+.libs
+import system as sys
+
+//Public definitions
+.public
+
+//Host system line ending
+const string hln=(sys.gethostsystem()==sys.oshost.linux?"\n":"")+(sys.gethostsystem()==sys.oshost.windows?"\r\n":"")
+
+//File path delimiter
+const string fpd=(sys.gethostsystem()==sys.oshost.linux?"/":"")+(sys.gethostsystem()==sys.oshost.windows?"\\":"")
+
+//File path functions
+syscall<getfnam>        string getfilename(string path)
+syscall<getfnamnx>      string getfilenamenoext(string path)
+syscall<getfnamx>       string getfileextension(string path)
+syscall<getfolder>      string getfoldername(string path)
+syscall<fileexists>     bool fileexists(string path)
+syscall<direxists>      bool direxists(string path)
+                        string pwd()
+                        string modname()
+                        string modpath()
+
+//File I/O system calls
+syscall<gethandler>     bool newhnd(ref int hnd)
+syscall<freehandler>    void freehnd(int hnd)
+syscall<getfilesize>    bool getfilesize(int hnd,ref long size)
+syscall<openforread>    bool openread(int hnd,string filename)
+syscall<openforwrite>   bool openwrite(int hnd,string filename)
+syscall<openforappend>  bool openappend(int hnd,string filename)
+syscall<read>           bool read(int hnd,ref char[] buffer,long length)
+syscall<write>          bool write(int hnd,char[] buffer,long length)
+syscall<readall>        bool read(int hnd,ref char[] buffer)
+syscall<writeall>       bool write(int hnd,char[] buffer)
+syscall<readstr>        bool read(int hnd,ref string line)
+syscall<writestr>       bool write(int hnd,string line)
+syscall<readstrall>     bool read(int hnd,ref string[] lines)
+syscall<writestrall>    bool write(int hnd,string[] lines)
+syscall<closefile>      bool closefile(int hnd)
+syscall<hnd2file>       string hnd2file(int hnd)
+syscall<file2hnd>       int file2hnd(string filename)
+
+//File name based I/O functions
+long getfilesize(string filename)
+bool read(string filename,ref char[] buffer)
+bool write(string filename,char[] buffer)
+bool append(string filename,char[] buffer)
+bool read(string filename,ref string line)
+bool write(string filename,string line)
+bool append(string filename,string line)
+bool read(string filename,ref string[] lines)
+bool write(string filename,string[] lines)
+bool append(string filename,string[] lines)
+
+//Private definitions
+.private
+
+//Implemetation
+.implem
+
+//Get current path
+func string pwd():
+  bool status
+  string[] out=(string[]){""}
+  if(sys.gethostsystem()==sys.oshost.linux):
+    status=sys.execute("/bin/pwd","",out)
+  elif(sys.gethostsystem()==sys.oshost.windows):
+    status=sys.execute("c:\\windows\\system32\\cmd.exe","/c cd",out)
+  else:
+    sys.panic("Call to pwd command is not implemented on host system "+sys.gethostsystemname())
+  :if
+  if(!status):
+    sys.panic("Unable to call pwd command on host system")
+  :if
+  return out[0]+fpd 
+:func
+
+//Current module name
+func string modname():
+  return getfilenamenoext(sys.args[0])
+:func
+
+//Current module path
+func string modpath():
+  string name
+  if(sys.args[0].startswith("/")):
+    name=sys.args[0]
+  elif(sys.args[0].startswith("\\")):
+    name=sys.args[0]
+  elif(sys.args[0].left(2).endswith(":")):
+    name=sys.args[0]
+  elif(sys.args[0].startswith("./") || sys.args[0].startswith(".\\")):
+    name=pwd()+sys.args[0].cutl(2)
+  else:
+    name=pwd()+sys.args[0]
+  :if
+  return getfoldername(name)
+:func
+
+//Read file size from from file path
+func long getfilesize(string filename):
+  int hnd=0
+  long size=-1
+  if(!newhnd(hnd)):
+    return size
+  :if
+  if(!openread(hnd,filename)):
+    freehnd(hnd)
+    return size
+  :if
+  if(!getfilesize(hnd,size)):
+    closefile(hnd)
+    freehnd(hnd)
+    return size
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return size
+  :if
+  freehnd(hnd)
+  return size
+:func
+
+//Read full content of file
+func bool read(string filename,ref char[] buffer):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openread(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!read(hnd,buffer)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Write full content of file
+func bool write(string filename,char[] buffer):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openwrite(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!write(hnd,buffer)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Append full content of file
+func bool append(string filename,char[] buffer):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openappend(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!write(hnd,buffer)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Read full contents of file
+func bool read(string filename,ref string line):
+  int hnd=0
+  string[] lines*;
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openread(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!read(hnd,lines)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  line=lines.join("\n")
+  freehnd(hnd)
+  return true
+:func
+
+//Write full content of file
+func bool write(string filename,string line):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openwrite(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!write(hnd,line)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Append full content of file
+func bool append(string filename,string line):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openappend(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!write(hnd,line)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Read full contents of file
+func bool read(string filename,ref string[] lines):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openread(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!read(hnd,lines)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Write full content of file
+func bool write(string filename,string[] lines):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openwrite(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!write(hnd,lines)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func
+
+//Append full content of file
+func bool append(string filename,string[] lines):
+  int hnd=0
+  if(!newhnd(hnd)):
+    return false
+  :if
+  if(!openappend(hnd,filename)):
+    freehnd(hnd)
+    return false
+  :if
+  if(!write(hnd,lines)):
+    closefile(hnd)
+    freehnd(hnd)
+    return false
+  :if
+  if(!closefile(hnd)):
+    freehnd(hnd)
+    return false
+  :if
+  freehnd(hnd)
+  return true
+:func

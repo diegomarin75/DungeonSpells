@@ -1,0 +1,1248 @@
+//Dungeon Spells datetime library
+set library=true
+
+//Libraries
+.libs
+import system as sys
+import math as ma
+
+//Public definitions
+.public
+
+//Time constants
+const long NSECS_IN_HOUR=3600L*1000000000L
+const long NSECS_IN_MINUTE=60L*1000000000L
+const long NSECS_IN_SECOND=1000000000L
+const long NSECS_IN_DAY=24L*3600L*1000000000L
+
+//Date class
+class date:
+  .publ
+  date(int year,int month,int day)            //New date value from year, month and day
+  init void value(int year,int month,int day) //Set date value from year, month and day
+  date begofmonth()                           //Calculate beginning of month date
+  date endofmonth()                           //Calculate end of month date
+  int year()                                  //Return date year part
+  int month()                                 //Return date month part
+  int day()                                   //Return date day part
+  date addyears(int years)                    //Add years to date
+  date addmonths(int months)                  //Add months to date
+  date adddays(int days)                      //Add days to date
+  string tostr()                              //To string YYYYMMDD
+  string tostr(char delim)                    //To string with delimiter YYYYxMMxDD
+  .priv
+  int _dt
+  allow datetime to _dt
+  allow [+]() to _dt
+  allow [-]() to _dt
+  allow [==]() to _dt
+  allow [!=]() to _dt
+  allow [<]() to _dt
+  allow [>]() to _dt
+  allow [<=]() to _dt
+  allow [>=]() to _dt
+  allow getdate() to _dt
+  allow getutcdate() to _dt
+:class
+
+//Time class
+class time:
+  .publ
+  time(int hour,int minute,int second)                                                  //new time value from hout,minute,second
+  time(int hour,int minute,int second,int millisec)                                     //new time value from hout,minute,second,millisecond
+  time(int hour,int minute,int second,int millisec,int microsec)                        //new time value from hout,minute,second,millisecond,microsecond
+  time(int hour,int minute,int second,int millisec,int microsec,int nanosec)            //new time value from hout,minute,second,millisecond,microsecond,nanosecond
+  init void value(int hour,int minute,int second)                                       //Set time value from hout,minute,second
+  init void value(int hour,int minute,int second,int millisec)                          //Set time value from hout,minute,second,millisecond
+  init void value(int hour,int minute,int second,int millisec,int microsec)             //Set time value from hout,minute,second,millisecond,microsecond
+  init void value(int hour,int minute,int second,int millisec,int microsec,int nanosec) //Set time value from hout,minute,second,millisecond,microsecond,nanosecond
+  int hour()                                                                            //Return time hour part
+  int minute()                                                                          //Return time minute part
+  int second()                                                                          //Return time second part
+  int millisec()                                                                        //Return time millisecond part
+  int microsec()                                                                        //Return time microsecond part
+  int nanosec()                                                                         //Return time nanosecond part
+  time addhours(int hours)                                                              //Add hours to time
+  time addminutes(int minutes)                                                          //Add minutes to time
+  time addseconds(int seconds)                                                          //Add seconds to time
+  time addmillisecs(long millisecs)                                                     //Add milliseconds to time
+  time addmicrosecs(long microsecs)                                                     //Add microseconds to time
+  time addnanosecs(long nanosecs)                                                       //Add nanoseconds to time
+  string tostr()                                                                        //To string HHMMSSNNNNNNNNN
+  string tostr(char delim)                                                              //To string with delimiter HHxMMxSS.NNNNNNNNN
+  .priv
+  long _tm
+  allow datetime to _tm
+  allow [+]() to _tm
+  allow [-]() to _tm
+  allow [==]() to _tm
+  allow [!=]() to _tm
+  allow [<]() to _tm
+  allow [>]() to _tm
+  allow [<=]() to _tm
+  allow [>=]() to _tm
+  allow gettime() to _tm
+  allow getutctime() to _tm
+:class
+
+//Date time class
+class datetime:
+  .publ
+  datetime(int year,int month,int day)                                                                             //New datetime value from year,month,day
+  datetime(int year,int month,int day,int hour,int minute,int second)                                              //New datetime value from year,month,day,hour,minute,second
+  datetime(int year,int month,int day,int hour,int minute,int second,int millisec)                                 //New datetime value from year,month,day,hour,minute,second,millisecond
+  datetime(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec)                    //New datetime value from year,month,day,hour,minute,second,millisecond,microsecond
+  datetime(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec,int nanosec)        //New datetime value from year,month,day,hour,minute,second,millisecond,microsecond,nanosecond
+  init void value(int year,int month,int day)                                                                      //Set datetime value from year,month,day
+  init void value(int year,int month,int day,int hour,int minute,int second)                                       //Set datetime value from year,month,day,hour,minute,second
+  init void value(int year,int month,int day,int hour,int minute,int second,int millisec)                          //Set datetime value from year,month,day,hour,minute,second,millisecond
+  init void value(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec)             //Set datetime value from year,month,day,hour,minute,second,millisecond,microsecond
+  init void value(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec,int nanosec) //Set datetime value from year,month,day,hour,minute,second,millisecond,microsecond,nanosecond
+  int year()                                                                                                       //Return datetime year part
+  int month()                                                                                                      //Return datetime month part
+  int day()                                                                                                        //Return datetime day part
+  int hour()                                                                                                       //Return datetime hour part
+  int minute()                                                                                                     //Return datetime minute part
+  int second()                                                                                                     //Return datetime second part
+  int millisec()                                                                                                   //Return datetime millisecond part
+  int microsec()                                                                                                   //Return datetime microsecond part
+  int nanosec()                                                                                                    //Return datetime nanosecond part
+  datetime begofmonth()                                                                                            //Calculate beginning of month date
+  datetime endofmonth()                                                                                            //Calculate end of month date
+  datetime addyears(int years)                                                                                     //Add years to datetime
+  datetime addmonths(int months)                                                                                   //Add months to datetime
+  datetime adddays(int days)                                                                                       //Add days to datetime
+  datetime addhours(int hours)                                                                                     //Add hours to datetime
+  datetime addminutes(int minutes)                                                                                 //Add minutes to datetime
+  datetime addseconds(int seconds)                                                                                 //Add seconds to datetime
+  datetime addmillisecs(long millisecs)                                                                            //Add milliseconds to datetime
+  datetime addmicrosecs(long microsecs)                                                                            //Add microseconds to datetime
+  datetime addnanosecs(long nanosecs)                                                                              //Add nanoseconds to datetime
+  date todate()                                                                                                    //Convert to date (ignoring time part)
+  time totime()                                                                                                    //Convert to time (ignoring date part)
+  string tostr()                                                                                                   //To string YYYYMMDDHHMMSSNNNNNNNNN
+  string tostr(char delim1,char delim2)                                                                            //To string with delimiter YYYY1MM1DD HH2MM2SS.NNNNNNNNN
+  .priv
+  int _dt
+  long _tm
+  allow [+]() to _dt
+  allow [+]() to _tm
+  allow [-]() to _dt
+  allow [-]() to _tm
+  allow [==]() to _dt
+  allow [!=]() to _dt
+  allow [<]() to _dt
+  allow [>]() to _dt
+  allow [<=]() to _dt
+  allow [>=]() to _dt
+  allow [==]() to _tm
+  allow [!=]() to _tm
+  allow [<]() to _tm
+  allow [>]() to _tm
+  allow [<=]() to _tm
+  allow [>=]() to _tm
+  allow getdatetime() to _dt
+  allow getdatetime() to _tm
+  allow getutcdatetime() to _dt
+  allow getutcdatetime() to _tm
+:class
+
+//Time span class
+class timespan:
+  .publ
+  timespan(int days)                                                                                   //New time span value from years,months,days
+  timespan(int days,int hours,int minutes,int seconds)                                                 //New time span value from years,months,days,hours,minutes,seconds
+  timespan(int days,int hours,int minutes,int seconds,int millisecs)                                   //New time span value from years,months,days,hours,minutes,seconds,miliseconcds,
+  timespan(int days,int hours,int minutes,int seconds,int millisecs,int microsecs)                     //New time span value from years,months,days,hours,minutes,seconds,miliseconcds,microseconds
+  timespan(int days,int hours,int minutes,int seconds,int millisecs,int microsecs,int nanosecs)        //New time span value from years,months,days,hours,minutes,seconds,miliseconcds,microseconds,nanoseconds
+  init void value(int days)                                                                            //Set time span value from days
+  init void value(int days,int hours,int minutes,int seconds)                                          //Set time span value from days,hours,minutes,seconds
+  init void value(int days,int hours,int minutes,int seconds,int millisecs)                            //Set time span value from days,hours,minutes,seconds,miliseconcds,
+  init void value(int days,int hours,int minutes,int seconds,int millisecs,int microsecs)              //Set time span value from days,hours,minutes,seconds,miliseconcds,microseconds
+  init void value(int days,int hours,int minutes,int seconds,int millisecs,int microsecs,int nanosecs) //Set time span value from days,hours,minutes,seconds,miliseconcds,microseconds,nanoseconds
+  char sign()                                                                                          //Return sign in timespan
+  long day()                                                                                           //Return day part in timespan
+  int hour()                                                                                           //Return hour part in timespan
+  int minute()                                                                                         //Return minute part in timespan
+  int second()                                                                                         //Return second part in timespan
+  int millisec()                                                                                       //Return millisecond part in timespan
+  int microsec()                                                                                       //Return microsecond part in timespan
+  int nanosec()                                                                                        //Return nanosecond part in timespan
+  float indays()                                                                                       //Return day part of timespan
+  float inhours()                                                                                      //Return timespan in hours
+  float inminutes()                                                                                    //Return timespan in minutes
+  float inseconds()                                                                                    //Return timespan in seconds
+  float inmillisecs()                                                                                  //Return timespan in milliseconds
+  float inmicrosecs()                                                                                  //Return timespan in microseconds
+  float innanosecs()                                                                                   //Return timespan in nanoseconds
+  timespan adddays(int days)                                                                           //Add days to time span
+  timespan addhours(int hours)                                                                         //Add hours to time span
+  timespan addminutes(int minutes)                                                                     //Add minutes to time span
+  timespan addseconds(int seconds)                                                                     //Add seconds to time span
+  timespan addmillisecs(long millisecs)                                                                //Add milliseconds to time span
+  timespan addmicrosecs(long microsecs)                                                                //Add microseconds to time span
+  timespan addnanosecs(long nanosecs)                                                                  //Add nanoseconds to time span
+  string tostr()                                                                                       //To string D HHMMSSNNNNNNNNN
+  string tostr(char delim)                                                                             //To string with delimiter D HHxMMxSS.NNNNNNNNN
+  .priv
+  char _sign
+  long _days
+  long _nsec
+  allow [+]() to _sign
+  allow [+]() to _days
+  allow [+]() to _nsec
+  allow [-]() to _sign
+  allow [-]() to _days
+  allow [-]() to _nsec
+  allow [==]() to _sign
+  allow [!=]() to _sign
+  allow [<]() to _sign
+  allow [>]() to _sign
+  allow [<=]() to _sign
+  allow [>=]() to _sign
+  allow [==]() to _days
+  allow [!=]() to _days
+  allow [<]() to _days
+  allow [>]() to _days
+  allow [<=]() to _days
+  allow [>=]() to _days
+  allow [==]() to _nsec
+  allow [!=]() to _nsec
+  allow [<]() to _nsec
+  allow [>]() to _nsec
+  allow [<=]() to _nsec
+  allow [>=]() to _nsec
+:class
+
+//Date & time functions and operators
+bool isdatevalid(int year,int month,int day)                                                  //Check date is valid
+bool istimevalid(int hours,int minutes,int seconds)                                           //Check time is valid from hours,minutes,seconds
+bool istimevalid(int hours,int minutes,int seconds,int millisecs)                             //Check time is valid from hours,minutes,seconds,miliseconcds,
+bool istimevalid(int hours,int minutes,int seconds,int millisecs,int microsecs)               //Check time is valid from hours,minutes,seconds,miliseconcds,microseconds
+bool istimevalid(int hours,int minutes,int seconds,int millisecs,int microsecs,int nanosecs)  //Check time is valid from hours,minutes,seconds,miliseconcds,microseconds,nanoseconds
+date getdate()                                                                                //Get current date
+time gettime()                                                                                //Get current time
+date getutcdate()                                                                             //Get current UTC date
+time getutctime()                                                                             //Get current UTC time
+datetime getdatetime()                                                                        //Get current date and time
+datetime getutcdatetime()                                                                     //Get current UTC date and time
+timespan [-](date end,date start)                                                             //Calculate difference between two date values as time span
+timespan [-](time end,time start)                                                             //Calculate difference between two time values as time span
+timespan [-](datetime end,datetime start)                                                     //Calculate difference between two datetime values as time span
+date [+](date dt,timespan ts)                                                                 //Add time span to date value
+time [+](time tm,timespan ts)                                                                 //Add time span to time value
+datetime [+](datetime dm,timespan ts)                                                         //Add time span to datetime value
+date [-](date dt,timespan ts)                                                                 //Substract time span from date value
+time [-](time tm,timespan ts)                                                                 //Substract time span from time value
+datetime [-](datetime dm,timespan ts)                                                         //Substract time span from datetime value
+timespan [+](timespan ts1,timespan ts2)                                                       //Add two time spans
+timespan [-](timespan ts1,timespan ts2)                                                       //Subtract two time spans
+bool [==](date d1,date d2)                                                                    //Date comparison ==
+bool [!=](date d1,date d2)                                                                    //Date comparison !=
+bool [<](date d1,date d2)                                                                     //Date comparison <
+bool [>](date d1,date d2)                                                                     //Date comparison >
+bool [<=](date d1,date d2)                                                                    //Date comparison <=
+bool [>=](date d1,date d2)                                                                    //Date comparison >=
+bool [==](time t1,time t2)                                                                    //Time comparison ==
+bool [!=](time t1,time t2)                                                                    //Time comparison !=
+bool [<](time t1,time t2)                                                                     //Time comparison <
+bool [>](time t1,time t2)                                                                     //Time comparison >
+bool [<=](time t1,time t2)                                                                    //Time comparison <=
+bool [>=](time t1,time t2)                                                                    //Time comparison >=
+bool [==](datetime dt1,datetime dt2)                                                          //Datetime comparison ==
+bool [!=](datetime dt1,datetime dt2)                                                          //Datetime comparison !=
+bool [<](datetime dt1,datetime dt2)                                                           //Datetime comparison <
+bool [>](datetime dt1,datetime dt2)                                                           //Datetime comparison >
+bool [<=](datetime dt1,datetime dt2)                                                          //Datetime comparison <=
+bool [>=](datetime dt1,datetime dt2)                                                          //Datetime comparison >=
+bool [==](timespan ts1,timespan ts2)                                                          //Timespan comparison ==
+bool [!=](timespan ts1,timespan ts2)                                                          //Timespan comparison !=
+bool [<](timespan ts1,timespan ts2)                                                           //Timespan comparison <
+bool [>](timespan ts1,timespan ts2)                                                           //Timespan comparison >
+bool [<=](timespan ts1,timespan ts2)                                                          //Timespan comparison <=
+bool [>=](timespan ts1,timespan ts2)                                                          //Timespan comparison >=
+
+//Private definitions
+.private
+
+//Date parts
+enum dtpart:
+  year=1
+  month=2
+  day=3
+:enum
+
+//Time parts
+enum tmpart:
+  hour=1
+  minute=2
+  second=3
+  nanosec=4
+:enum
+
+//Date & time internal system calls
+syscall<datevalid>  bool _datevalid(int year,int month,int day)
+syscall<datevalue>  int _datevalue(int year,int month,int day)
+syscall<begofmonth> int _begofmonth(int dt)
+syscall<endofmonth> int _endofmonth(int dt)
+syscall<datepart>   int _datepart(int dt,dtpart part)
+syscall<dateadd>    int _dateadd(int dt,dtpart part,int units)
+syscall<timevalid>  bool _timevalid(int hour,int minute,int second,long nanosec)
+syscall<timevalue>  long _timevalue(int hour,int minute,int second,long nanosec)
+syscall<timepart>   long _timepart(long tm,tmpart part)
+syscall<timeadd>    long _timeadd(long tm,tmpart part,long units,ref int dayrest)
+syscall<nsecadd>    long _nsecadd(long nsec,tmpart part,long units,ref int dayrest)
+syscall<getdate>    int _getdate(bool utc)
+syscall<gettime>    long _gettime(bool utc)
+syscall<datediff>   int _datediff(int dt1,int dt2)
+syscall<timediff>   long _timediff(long tm1,long tm2)
+
+//Implemetation
+.implem
+
+//New date value from year, month and day
+fmem date(int year,int month,int day):
+  self._dt=_datevalue(year,month,day)
+  return self
+:fmem
+
+//Set date value from year, month and day
+fmem void date.value(int year,int month,int day):
+  self._dt=_datevalue(year,month,day)
+:fmem
+
+//Calculate beginning of month date
+fmem date date.begofmonth():
+  return (date){_begofmonth(self._dt)}
+:fmem
+
+//Calculate end of month date
+fmem date date.endofmonth():
+  return (date){_endofmonth(self._dt)}
+:fmem
+
+//Return date year part
+fmem int date.year():
+  return _datepart(self._dt,dtpart.year)
+:fmem
+
+//Return date month part
+fmem int date.month():
+  return _datepart(self._dt,dtpart.month)
+:fmem
+
+//Return date day part
+fmem int date.day():
+  return _datepart(self._dt,dtpart.day)
+:fmem
+
+//Add years to date
+fmem date date.addyears(int years):
+  return (date){_dateadd(self._dt,dtpart.year,years)}
+:fmem
+
+//Add months to date
+fmem date date.addmonths(int months):
+  return (date){_dateadd(self._dt,dtpart.month,months)}
+:fmem
+
+//Add days to date
+fmem date date.adddays(int days):
+  return (date){_dateadd(self._dt,dtpart.day,days)}
+:fmem
+
+//Date to string
+fmem string date.tostr():
+  string str=(_datepart(self._dt,dtpart.year)<0?"-":"")
+  str+=ma.abs(_datepart(self._dt,dtpart.year)).tostr().rjust(4,'0')
+  str+=_datepart(self._dt,dtpart.month).tostr().rjust(2,'0')
+  str+=_datepart(self._dt,dtpart.day).tostr().rjust(2,'0')
+  return str
+:fmem
+
+//Date to string with delimiter
+fmem string date.tostr(char delim):
+  string str=(_datepart(self._dt,dtpart.year)<0?"-":"")
+  str+=ma.abs(_datepart(self._dt,dtpart.year)).tostr().rjust(4,'0')
+  str+=delim
+  str+=_datepart(self._dt,dtpart.month).tostr().rjust(2,'0')
+  str+=delim
+  str+=_datepart(self._dt,dtpart.day).tostr().rjust(2,'0')
+  return str
+:fmem
+
+//new time value from hout,minute,second
+fmem time(int hour,int minute,int second):
+  self._tm=_timevalue(hour,minute,second,0)
+  return self
+:fmem
+
+//new time value from hout,minute,second,millisecond
+fmem time(int hour,int minute,int second,int millisec):
+  self._tm=_timevalue(hour,minute,second,1000000*(long)millisec)
+  return self
+:fmem
+
+//new time value from hout,minute,second,millisecond,microsecond
+fmem time(int hour,int minute,int second,int millisec,int microsec):
+  self._tm=_timevalue(hour,minute,second,1000000*(long)millisec + 1000*(long)microsec)
+  return self
+:fmem
+
+//new time value from hout,minute,second,millisecond,microsecond,nanosecond
+fmem time(int hour,int minute,int second,int millisec,int microsec,int nanosec):
+  self._tm=_timevalue(hour,minute,second,1000000*(long)millisec + 1000*(long)microsec + nanosec)
+  return self
+:fmem
+
+//Set time value from hout,minute,second
+fmem void time.value(int hour,int minute,int second):
+  self._tm=_timevalue(hour,minute,second,0)
+:fmem
+
+//Set time value from hout,minute,second,millisecond
+fmem void time.value(int hour,int minute,int second,int millisec):
+  self._tm=_timevalue(hour,minute,second,1000000*(long)millisec)
+:fmem
+
+//Set time value from hout,minute,second,millisecond,microsecond
+fmem void time.value(int hour,int minute,int second,int millisec,int microsec):
+  self._tm=_timevalue(hour,minute,second,1000000*(long)millisec + 1000*(long)microsec)
+:fmem
+
+//Set time value from hout,minute,second,millisecond,microsecond,nanosecond
+fmem void time.value(int hour,int minute,int second,int millisec,int microsec,int nanosec):
+  self._tm=_timevalue(hour,minute,second,1000000*(long)millisec + 1000*(long)microsec + nanosec)
+:fmem
+
+//Return time hour part
+fmem int time.hour():
+  return (int)_timepart(self._tm,tmpart.hour)
+:fmem
+
+//Return time minute part
+fmem int time.minute():
+  return (int)_timepart(self._tm,tmpart.minute)
+:fmem
+
+//Return time second part
+fmem int time.second():
+  return (int)_timepart(self._tm,tmpart.second)
+:fmem
+
+//Return time millisecond part
+fmem int time.millisec():
+  return (int)_timepart(self._tm,tmpart.nanosec)/1000000
+:fmem
+
+//Return time microsecond part
+fmem int time.microsec():
+  return (int)((_timepart(self._tm,tmpart.nanosec)/1000)%1000)
+:fmem
+
+//Return time nanosecond part
+fmem int time.nanosec():
+  return (int)(_timepart(self._tm,tmpart.nanosec)%1000)
+:fmem
+
+//Add hours to time
+fmem time time.addhours(int hours):
+  int rest=0
+  return (time){_timeadd(self._tm,tmpart.hour,hours,rest)}
+:fmem
+
+//Add minutes to time
+fmem time time.addminutes(int minutes):
+  int rest=0
+  return (time){_timeadd(self._tm,tmpart.minute,minutes,rest)}
+:fmem
+
+//Add seconds to time
+fmem time time.addseconds(int seconds):
+  int rest=0
+  return (time){_timeadd(self._tm,tmpart.second,seconds,rest)}
+:fmem
+
+//Add milliseconds to time
+fmem time time.addmillisecs(long millisecs):
+  int rest=0
+  return (time){_timeadd(self._tm,tmpart.nanosec,millisecs*1000000,rest)}
+:fmem
+
+//Add microseconds to time
+fmem time time.addmicrosecs(long microsecs):
+  int rest=0
+  return (time){_timeadd(self._tm,tmpart.nanosec,microsecs*1000,rest)}
+:fmem
+
+//Add nanoseconds to time
+fmem time time.addnanosecs(long nanosecs):
+  int rest=0
+  return (time){_timeadd(self._tm,tmpart.nanosec,nanosecs,rest)}
+:fmem
+
+//Time to string
+fmem string time.tostr():
+  string str=_timepart(self._tm,tmpart.hour).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.minute).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.second).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.nanosec).tostr().rjust(9,'0')
+  return str
+:fmem
+
+//Time to string with delimiter
+fmem string time.tostr(char delim):
+  string str=_timepart(self._tm,tmpart.hour).tostr().rjust(2,'0')
+  str+=delim
+  str+=_timepart(self._tm,tmpart.minute).tostr().rjust(2,'0')
+  str+=delim
+  str+=_timepart(self._tm,tmpart.second).tostr().rjust(2,'0')
+  str+="."
+  str+=_timepart(self._tm,tmpart.nanosec).tostr().rjust(9,'0')
+  return str
+:fmem
+
+//New datetime value from year,month,day
+fmem datetime(int year,int month,int day):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(0,0,0,0)
+  return self
+:fmem
+
+//New datetime value from year,month,day,hour,minute,second
+fmem datetime(int year,int month,int day,int hour,int minute,int second):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,0)
+  return self
+:fmem
+
+//New datetime value from year,month,day,hour,minute,second,millisecond
+fmem datetime(int year,int month,int day,int hour,int minute,int second,int millisec):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,(long)1000000*(long)millisec)
+  return self
+:fmem
+
+//New datetime value from year,month,day,hour,minute,second,millisecond,microsecond
+fmem datetime(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,(long)1000000*(long)millisec + (long)1000*(long)microsec)
+  return self
+:fmem
+
+//New datetime value from year,month,day,hour,minute,second,millisecond,microsecond,nanosecond
+fmem datetime(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec,int nanosec):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,(long)1000000*(long)millisec + (long)1000*(long)microsec + nanosec)
+  return self
+:fmem
+
+//Set datetime value from year,month,day
+fmem void datetime.value(int year,int month,int day):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(0,0,0,0)
+:fmem
+
+//Set datetime value from year,month,day,hour,minute,second
+fmem void datetime.value(int year,int month,int day,int hour,int minute,int second):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,0)
+:fmem
+
+//Set datetime value from year,month,day,hour,minute,second,millisecond
+fmem void datetime.value(int year,int month,int day,int hour,int minute,int second,int millisec):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,(long)1000000*(long)millisec)
+:fmem
+
+//Set datetime value from year,month,day,hour,minute,second,millisecond,microsecond
+fmem void datetime.value(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,(long)1000000*(long)millisec + (long)1000*(long)microsec)
+:fmem
+
+//Set datetime value from year,month,day,hour,minute,second,millisecond,microsecond,nanosecond
+fmem void datetime.value(int year,int month,int day,int hour,int minute,int second,int millisec,int microsec,int nanosec):
+  self._dt=_datevalue(year,month,day)
+  self._tm=_timevalue(hour,minute,second,(long)1000000*(long)millisec + (long)1000*(long)microsec + nanosec)
+:fmem
+
+//Return datetime year part
+fmem int datetime.year():
+  return _datepart(self._dt,dtpart.year)
+:fmem
+
+//Return datetime month part
+fmem int datetime.month():
+  return _datepart(self._dt,dtpart.month)
+:fmem
+
+//Return datetime day part
+fmem int datetime.day():
+  return _datepart(self._dt,dtpart.day)
+:fmem
+
+//Return datetime hour part
+fmem int datetime.hour():
+  return (int)_timepart(self._tm,tmpart.hour)
+:fmem
+
+//Return datetime minute part
+fmem int datetime.minute():
+  return (int)_timepart(self._tm,tmpart.minute)
+:fmem
+
+//Return datetime second part
+fmem int datetime.second():
+  return (int)_timepart(self._tm,tmpart.second)
+:fmem
+
+//Return datetime millisecond part
+fmem int datetime.millisec():
+  return (int)_timepart(self._tm,tmpart.nanosec)/1000000
+:fmem
+
+//Return datetime microsecond part
+fmem int datetime.microsec():
+  return (int)(_timepart(self._tm,tmpart.nanosec)/1000)%1000
+:fmem
+
+//Return datetime nanosecond part
+fmem int datetime.nanosec():
+  return (int)_timepart(self._tm,tmpart.nanosec)%1000
+:fmem
+
+//Calculate beginning of month date
+fmem datetime datetime.begofmonth():
+  return (datetime){_begofmonth(self._dt),self._tm}
+:fmem
+
+//Calculate end of month date
+fmem datetime datetime.endofmonth():
+  return (datetime){_endofmonth(self._dt),self._tm}
+:fmem
+
+//Add years to datetime
+fmem datetime datetime.addyears(int years):
+  return (datetime){_dateadd(self._dt,dtpart.year,years),self._tm}
+:fmem
+
+//Add months to datetime
+fmem datetime datetime.addmonths(int months):
+  return (datetime){_dateadd(self._dt,dtpart.month,months),self._tm}
+:fmem
+
+//Add days to datetime
+fmem datetime datetime.adddays(int days):
+  return (datetime){_dateadd(self._dt,dtpart.day,days),self._tm}
+:fmem
+
+//Add hours to datetime
+fmem datetime datetime.addhours(int hours):
+  int rest=0
+  long tm=_timeadd(self._tm,tmpart.hour,hours,rest)
+  int dt=_dateadd(self._dt,dtpart.day,rest)
+  return (datetime){dt,tm}
+:fmem
+
+//Add minutes to datetime
+fmem datetime datetime.addminutes(int minutes):
+  int rest=0
+  long tm=_timeadd(self._tm,tmpart.minute,minutes,rest)
+  int dt=_dateadd(self._dt,dtpart.day,rest)
+  return (datetime){dt,tm}
+:fmem
+
+//Add seconds to datetime
+fmem datetime datetime.addseconds(int seconds):
+  int rest=0
+  long tm=_timeadd(self._tm,tmpart.second,seconds,rest)
+  int dt=_dateadd(self._dt,dtpart.day,rest)
+  return (datetime){dt,tm}
+:fmem
+
+//Add milliseconds to datetime
+fmem datetime datetime.addmillisecs(long millisecs):
+  int rest=0
+  long tm=_timeadd(self._tm,tmpart.nanosec,millisecs*1000000,rest)
+  int dt=_dateadd(self._dt,dtpart.day,rest)
+  return (datetime){dt,tm}
+:fmem
+
+//Add microseconds to datetime
+fmem datetime datetime.addmicrosecs(long microsecs):
+  int rest=0
+  long tm=_timeadd(self._tm,tmpart.nanosec,microsecs*1000,rest)
+  int dt=_dateadd(self._dt,dtpart.day,rest)
+  return (datetime){dt,tm}
+:fmem
+
+//Add nanoseconds to datetime
+fmem datetime datetime.addnanosecs(long nanosecs):
+  int rest=0
+  long tm=_timeadd(self._tm,tmpart.nanosec,nanosecs,rest)
+  int dt=_dateadd(self._dt,dtpart.day,rest)
+  return (datetime){dt,tm}
+:fmem
+
+//Convert to date (ignoring time part)
+fmem date datetime.todate():
+  return (date){self._dt}
+:fmem
+
+//Convert to time (ignoring date part)
+fmem time datetime.totime():
+  return (time){self._tm}
+:fmem
+
+//Datetime to string
+fmem string datetime.tostr():
+  string str=(_datepart(self._dt,dtpart.year)<0?"-":"")
+  str+=ma.abs(_datepart(self._dt,dtpart.year)).tostr().rjust(4,'0')
+  str+=_datepart(self._dt,dtpart.month).tostr().rjust(2,'0')
+  str+=_datepart(self._dt,dtpart.day).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.hour).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.minute).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.second).tostr().rjust(2,'0')
+  str+=_timepart(self._tm,tmpart.nanosec).tostr().rjust(9,'0')
+  return str
+:fmem
+
+//Datetime to string with delimiter
+fmem string datetime.tostr(char delim1,char delim2):
+  string str=(_datepart(self._dt,dtpart.year)<0?"-":"")
+  str+=ma.abs(_datepart(self._dt,dtpart.year)).tostr().rjust(4,'0')
+  str+=delim1
+  str+=_datepart(self._dt,dtpart.month).tostr().rjust(2,'0')
+  str+=delim1
+  str+=_datepart(self._dt,dtpart.day).tostr().rjust(2,'0')
+  str+=" "
+  str+=_timepart(self._tm,tmpart.hour).tostr().rjust(2,'0')
+  str+=delim2
+  str+=_timepart(self._tm,tmpart.minute).tostr().rjust(2,'0')
+  str+=delim2
+  str+=_timepart(self._tm,tmpart.second).tostr().rjust(2,'0')
+  str+="."
+  str+=_timepart(self._tm,tmpart.nanosec).tostr().rjust(9,'0')
+  return str
+:fmem
+
+//New time span value from years,months,days
+fmem timespan(int days):
+  self._sign=(days<0?-1:1);
+  self._days=ma.abs(days)
+  self._nsec=0
+  return self
+:fmem
+
+//New time span value from years,months,days,hours,minutes,seconds
+fmem timespan(int days,int hours,int minutes,int seconds):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+  return self
+:fmem
+
+//New time span value from years,months,days,hours,minutes,seconds,miliseconcds,
+fmem timespan(int days,int hours,int minutes,int seconds,int millisecs):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND+(long)millisecs*(long)1000000
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+  return self
+:fmem
+
+//New time span value from years,months,days,hours,minutes,seconds,miliseconcds,microseconds
+fmem timespan(int days,int hours,int minutes,int seconds,int millisecs,int microsecs):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND+(long)millisecs*(long)1000000+(long)microsecs*(long)1000
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+  return self
+:fmem
+
+//New time span value from years,months,days,hours,minutes,seconds,miliseconcds,microseconds,nanoseconds
+fmem timespan(int days,int hours,int minutes,int seconds,int millisecs,int microsecs,int nanosecs):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND+(long)millisecs*(long)1000000+(long)microsecs*(long)1000+(long)nanosecs
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+  return self
+:fmem
+
+//Set time span value from days
+fmem void timespan.value(int days):
+  self._sign=(days<0?-1:1);
+  self._days=ma.abs(days)
+  self._nsec=0
+:fmem
+
+//Set time span value from days,hours,minutes,seconds
+fmem void timespan.value(int days,int hours,int minutes,int seconds):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+:fmem
+
+//Set time span value from days,hours,minutes,seconds,miliseconcds,
+fmem void timespan.value(int days,int hours,int minutes,int seconds,int millisecs):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND+(long)millisecs*(long)1000000
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+:fmem
+
+//Set time span value from days,hours,minutes,seconds,miliseconcds,microseconds
+fmem void timespan.value(int days,int hours,int minutes,int seconds,int millisecs,int microsecs):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND+(long)millisecs*(long)1000000+(long)microsecs*(long)1000
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+:fmem
+
+//Set time span value from days,hours,minutes,seconds,miliseconcds,microseconds,nanoseconds
+fmem void timespan.value(int days,int hours,int minutes,int seconds,int millisecs,int microsecs,int nanosecs):
+  long nsec=(long)hours*NSECS_IN_HOUR+(long)minutes*NSECS_IN_MINUTE+(int)seconds*NSECS_IN_SECOND+(long)millisecs*(long)1000000+(long)microsecs*(long)1000+(long)nanosecs
+  if((days>0 && nsec<0) || (days<0 && nsec>0)):
+    sys.panic("Inconsistent timespan!")
+  :if
+  self._sign=(days!=0?(days<0?-1:1):(nsec<0?-1:1))
+  self._days=ma.abs(days)
+  self._nsec=ma.abs(nsec)
+:fmem
+
+//Return sign in timespan
+fmem char timespan.sign():
+  return self._sign
+:fmem
+
+//Return hour part in timespan
+fmem long timespan.day():
+  return self._days
+:fmem
+
+//Return hour part in timespan
+fmem int timespan.hour():
+  return (int)((self._nsec/NSECS_IN_HOUR)%24)
+:fmem
+
+//Return minute part in timespan
+fmem int timespan.minute():
+  return (int)((self._nsec/NSECS_IN_MINUTE)%60)
+:fmem
+
+//Return second part in timespan
+fmem int timespan.second():
+  return (int)((self._nsec/NSECS_IN_SECOND)%60)
+:fmem
+
+//Return millisec part in timespan
+fmem int timespan.millisec():
+  return (int)((self._nsec/1000000)%1000)
+:fmem
+
+//Return microsec part in timespan
+fmem int timespan.microsec():
+  return (int)((self._nsec/1000)%1000)
+:fmem
+
+//Return nanosec part in timespan
+fmem int timespan.nanosec():
+  return (int)((self._nsec)%1000)
+:fmem
+
+//Return day part of timespan
+fmem float timespan.indays():
+  return (float)self._sign*((float)self._days+(float)self._nsec/(float)NSECS_IN_DAY)
+:fmem
+
+//Return timespan hours
+fmem float timespan.inhours():
+  return (float)self._sign*((float)self._days*24+(float)self._nsec/(float)NSECS_IN_HOUR)
+:fmem
+
+//Return timespan minutes
+fmem float timespan.inminutes():
+  return (float)self._sign*((float)self._days*24*60+(float)self._nsec/(float)NSECS_IN_MINUTE)
+:fmem
+
+//Return timespan seconds
+fmem float timespan.inseconds():
+  return (float)self._sign*((float)self._days*24*3600+(float)self._nsec/(float)NSECS_IN_SECOND)
+:fmem
+
+//Return timespan milliseconds
+fmem float timespan.inmillisecs():
+  return (float)self._sign*((float)self._days*24*3600*1000+(float)self._nsec/(float)1000000)
+:fmem
+
+//Return timespan microseconds
+fmem float timespan.inmicrosecs():
+  return (float)self._sign*((float)self._days*24*3600*1000000+(float)self._nsec/(float)1000)
+:fmem
+
+//Return timespan nanoseconds
+fmem float timespan.innanosecs():
+  return (float)self._sign*((float)self._days*24*3600*1000000000+(float)self._nsec)
+:fmem
+
+//Add days to time span
+fmem timespan timespan.adddays(int days):
+  long daycount=self._days+days
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),self._nsec}
+:fmem
+
+//Add hours to time span
+fmem timespan timespan.addhours(int hours):
+  int rest=0
+  long nsec=_nsecadd(self._nsec,tmpart.hour,hours,rest)
+  long daycount=self._days+rest
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),nsec}
+:fmem
+
+//Add minutes to time span
+fmem timespan timespan.addminutes(int minutes):
+  int rest=0
+  long nsec=_nsecadd(self._nsec,tmpart.minute,minutes,rest)
+  long daycount=self._days+rest
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),nsec}
+:fmem
+
+//Add seconds to time span
+fmem timespan timespan.addseconds(int seconds):
+  int rest=0
+  long nsec=_nsecadd(self._nsec,tmpart.second,seconds,rest)
+  long daycount=self._days+rest
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),nsec}
+:fmem
+
+//Add milliseconds to time span
+fmem timespan timespan.addmillisecs(long millisecs):
+  int rest=0
+  long nsec=_nsecadd(self._nsec,tmpart.nanosec,millisecs*1000000,rest)
+  long daycount=self._days+rest
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),nsec}
+:fmem
+
+//Add microseconds to time span
+fmem timespan timespan.addmicrosecs(long microsecs):
+  int rest=0
+  long nsec=_nsecadd(self._nsec,tmpart.nanosec,microsecs*1000,rest)
+  long daycount=self._days+rest
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),nsec}
+:fmem
+
+//Add nanoseconds to time span
+fmem timespan timespan.addnanosecs(long nanosecs):
+  int rest=0
+  long nsec=_nsecadd(self._nsec,tmpart.nanosec,nanosecs,rest)
+  long daycount=self._days+rest
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),nsec}
+:fmem
+
+//Timespan to string
+fmem string timespan.tostr():
+  string str=(self._sign<0?"-":"+")
+  str+=self._days.tostr()
+  str+=" "
+  str+=self.hour().tostr().rjust(2,'0')
+  str+=self.minute().tostr().rjust(2,'0')
+  str+=self.second().tostr().rjust(2,'0')
+  str+="."
+  str+=(self._nsec%(long)1000000000).tostr().rjust(9,'0')
+  return str
+:fmem
+
+//Timespan to string with delimiter
+fmem string timespan.tostr(char delim):
+  string str=(self._sign<0?"-":"+")
+  str+=self._days.tostr()
+  str+=" "
+  str+=self.hour().tostr().rjust(2,'0')
+  str+=delim
+  str+=self.minute().tostr().rjust(2,'0')
+  str+=delim
+  str+=self.second().tostr().rjust(2,'0')
+  str+="."
+  str+=(self._nsec%(long)1000000000).tostr().rjust(9,'0')
+  return str
+:fmem
+
+//Check a date is valid
+func bool isdatevalid(int year,int month,int day):
+  return _datevalid(year,month,day)
+:func
+
+//Check time is valid from hours,minutes,seconds
+func bool istimevalid(int hours,int minutes,int seconds):
+  return _timevalid(hours,minutes,seconds,0)
+:func
+
+//Check time is valid from hours,minutes,seconds,miliseconcds,
+func bool istimevalid(int hours,int minutes,int seconds,int millisecs):
+  return _timevalid(hours,minutes,seconds,(long)millisecs*(long)1000000)
+:func
+
+//Check time is valid from hours,minutes,seconds,miliseconcds,microseconds
+func bool istimevalid(int hours,int minutes,int seconds,int millisecs,int microsecs):
+  return _timevalid(hours,minutes,seconds,(long)millisecs*(long)1000000+(long)microsecs*(long)1000)
+:func
+
+//Check time is valid from hours,minutes,seconds,miliseconcds,microseconds,nanoseconds
+func bool istimevalid(int hours,int minutes,int seconds,int millisecs,int microsecs,int nanosecs):
+  return _timevalid(hours,minutes,seconds,(long)millisecs*(long)1000000+(long)microsecs*(long)1000+nanosecs)
+:func
+
+
+//Get current date
+func date getdate():
+  return (date){_getdate(false)}
+:func
+
+//Get current time
+func time gettime():
+  return (time){_gettime(false)}
+:func
+
+//Get current UTC date
+func date getutcdate():
+  return (date){_getdate(true)}
+:func
+
+//Get current UTC time
+func time getutctime():
+  return (time){_gettime(true)}
+:func
+
+//Get current date and time
+func datetime getdatetime():
+  return (datetime){_getdate(false),_gettime(false)}
+:func
+
+//Get current date and time
+func datetime getutcdatetime():
+  return (datetime){_getdate(true),_gettime(true)}
+:func
+
+//Operator overload: Calculate difference between two date values as time span
+oper timespan [-](date end,date start):
+  long daycount=_datediff(start._dt,end._dt)
+  return (timespan){(daycount<0?-1:1),ma.abs(daycount),0}
+:oper
+
+//Operator overload: Calculate difference between two time values as time span
+oper timespan [-](time end,time start):
+  return (timespan){(start._tm<end._tm?1:-1),0,ma.abs(_timediff(start._tm,end._tm))}
+:oper
+
+//Operator overload: Calculate difference between two datetime values as time span
+oper timespan [-](datetime end,datetime start):
+  char sign
+  long daycount
+  if(start._dt==end._dt):
+    daycount=0
+    sign=(start._tm<end._tm?1:-1)
+  else:
+    daycount=_datediff(start._dt,end._dt)
+    sign=(daycount<0?-1:1)
+  :if
+  return (timespan){sign,ma.abs(daycount),ma.abs(_timediff(start._tm,end._tm))}
+:oper
+
+//Operator overload: Add time span to date value
+oper date [+](date dt,timespan ts):
+  return (date){_dateadd(dt._dt,dtpart.day,ts._sign*(int)ts._days)}
+:oper
+
+//Operator overload: Add time span to time value
+oper time [+](time tm,timespan ts):
+  int rest=0
+  return (time){_timeadd(tm._tm,tmpart.nanosec,ts._sign*ts._nsec,rest)}
+:oper
+
+//Operator overload: Add time span to datetime value
+oper datetime [+](datetime dm,timespan ts):
+  int rest=0
+  long tm=_timeadd(dm._tm,tmpart.nanosec,ts._sign*ts._nsec,rest)
+  int dt=_dateadd(dm._dt,dtpart.day,ts._sign*(int)ts._days+rest)
+  return (datetime){dt,tm}
+:oper
+
+//Operator overload: Substract time span from date value
+oper date [-](date dt,timespan ts):
+  return (date){_dateadd(dt._dt,dtpart.day,ts._sign*(-(int)ts._days))}
+:oper
+
+//Operator overload: Substract time span from time value
+oper time [-](time tm,timespan ts):
+  int rest=0
+  return (time){_timeadd(tm._tm,tmpart.nanosec,ts._sign*(-ts._nsec),rest)}
+:oper
+
+//Operator overload: Substract time span from datetime value
+oper datetime [-](datetime dm,timespan ts):
+  int rest=0
+  long tm=_timeadd(dm._tm,tmpart.nanosec,ts._sign*(-ts._nsec),rest)
+  int dt=_dateadd(dm._dt,dtpart.day,ts._sign*(-(int)ts._days)+rest)
+  return (datetime){dt,tm}
+:oper
+
+//Operator overload: Add two time spans
+oper timespan [+](timespan ts1,timespan ts2):
+  long nsec=ts1._sign*ts1._nsec+ts2._sign*ts2._nsec
+  long rest=nsec/NSECS_IN_DAY+(nsec<0?-1:0)
+  int days=(int)(ts1._sign*ts1._days+ts2._sign*ts2._days+rest)
+  return (timespan){(days!=0?(days<0?-1:1):(nsec<0?-1:1)),ma.abs(days),nsec%NSECS_IN_DAY}
+:oper
+
+//Operator overload: Subtract two time spans
+oper timespan [-](timespan ts1,timespan ts2):
+  long nsec=ts1._sign*ts1._nsec-ts2._sign*ts2._nsec
+  long rest=nsec/NSECS_IN_DAY+(nsec<0?-1:0)
+  int days=(int)(ts1._sign*ts1._days-ts2._sign*ts2._days+rest)
+  return (timespan){(days!=0?(days<0?-1:1):(nsec<0?-1:1)),ma.abs(days),nsec%NSECS_IN_DAY}
+:oper
+
+//Date comparison ==
+oper bool [==](date d1,date d2):
+  return d1._dt==d2._dt
+:oper
+
+//Date comparison !=
+oper bool [!=](date d1,date d2):
+  return d1._dt!=d2._dt
+:oper
+
+//Date comparison <
+oper bool [<](date d1,date d2):
+  return d1._dt<d2._dt
+:oper
+
+//Date comparison >
+oper bool [>](date d1,date d2):
+  return d1._dt>d2._dt
+:oper
+
+//Date comparison <=
+oper bool [<=](date d1,date d2):
+  return d1._dt<=d2._dt
+:oper
+
+//Date comparison >=
+oper bool [>=](date d1,date d2):
+  return d1._dt>=d2._dt
+:oper
+
+//Time comparison ==
+oper bool [==](time t1,time t2):
+  return t1._tm==t2._tm
+:oper
+
+//Time comparison !=
+oper bool [!=](time t1,time t2):
+  return t1._tm!=t2._tm
+:oper
+
+//Time comparison <
+oper bool [<](time t1,time t2):
+  return t1._tm<t2._tm
+:oper
+
+//Time comparison >
+oper bool [>](time t1,time t2):
+  return t1._tm>t2._tm
+:oper
+
+//Time comparison <=
+oper bool [<=](time t1,time t2):
+  return t1._tm<=t2._tm
+:oper
+
+//Time comparison >=
+oper bool [>=](time t1,time t2):
+  return t1._tm>=t2._tm
+:oper
+
+//Datetime comparison ==
+oper bool [==](datetime dt1,datetime dt2):
+  return (dt1._dt==dt2._dt && dt1._tm==dt2._tm?true:false)
+:oper
+
+//Datetime comparison !=
+oper bool [!=](datetime dt1,datetime dt2):
+  return (dt1._dt!=dt2._dt || dt1._tm!=dt2._tm?true:false)
+:oper
+
+//Datetime comparison <
+oper bool [<](datetime dt1,datetime dt2):
+  return (dt1._dt<dt2._dt?true:(dt1._dt==dt2._dt && dt1._tm<dt2._tm?true:false))
+:oper
+
+//Datetime comparison >
+oper bool [>](datetime dt1,datetime dt2):
+  return (dt1._dt>dt2._dt?true:(dt1._dt==dt2._dt && dt1._tm>dt2._tm?true:false))
+:oper
+
+//Datetime comparison <=
+oper bool [<=](datetime dt1,datetime dt2):
+  return (dt1._dt<dt2._dt?true:(dt1._dt==dt2._dt && dt1._tm<=dt2._tm?true:false))
+:oper
+
+//Datetime comparison >= 
+oper bool [>=](datetime dt1,datetime dt2):
+  return (dt1._dt>dt2._dt?true:(dt1._dt==dt2._dt && dt1._tm>=dt2._tm?true:false))
+:oper
+
+//Timespan comparison ==
+oper bool [==](timespan ts1,timespan ts2):
+  return (ts1._sign==ts2._sign && ts1._days==ts2._days && ts1._nsec==ts2._nsec)
+:oper
+
+//Timespan comparison !=
+oper bool [!=](timespan ts1,timespan ts2):
+  return (ts1._sign!=ts2._sign || ts1._days!=ts2._days || ts1._nsec!=ts2._nsec)
+:oper
+
+//Timespan comparison <
+oper bool [<](timespan ts1,timespan ts2):
+  return (ts1._sign<ts2._sign?true:(ts1._sign==ts2._sign && ts1._days<ts2._days?true:(ts1._sign==ts2._sign && ts1._days==ts2._days  && ts1._nsec<ts2._nsec?true:false)))
+:oper
+
+//Timespan comparison >
+oper bool [>](timespan ts1,timespan ts2):
+  return (ts1._sign>ts2._sign?true:(ts1._sign==ts2._sign && ts1._days>ts2._days?true:(ts1._sign==ts2._sign && ts1._days==ts2._days  && ts1._nsec>ts2._nsec?true:false)))
+:oper
+
+//Timespan comparison <=
+oper bool [<=](timespan ts1,timespan ts2):
+  return (ts1._sign<ts2._sign?true:(ts1._sign==ts2._sign && ts1._days<ts2._days?true:(ts1._sign==ts2._sign && ts1._days==ts2._days  && ts1._nsec<=ts2._nsec?true:false)))
+:oper
+
+//Timespan comparison >=
+oper bool [>=](timespan ts1,timespan ts2):
+  return (ts1._sign>ts2._sign?true:(ts1._sign==ts2._sign && ts1._days>ts2._days?true:(ts1._sign==ts2._sign && ts1._days==ts2._days  && ts1._nsec>=ts2._nsec?true:false)))
+:oper
+

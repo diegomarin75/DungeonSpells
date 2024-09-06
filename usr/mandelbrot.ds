@@ -1,0 +1,114 @@
+//Program options
+set memory_unit=2048 //Memory block size                
+set start_units=4096 //Starting memory blocks           
+set chunk_units=1024 //Increase size of memory in blocks
+set block_count=4096 //Starting size of memory handlers 
+
+//Libraries section -------------------------------------------------------------------------------------------------
+.libs
+
+//Standard library
+import math as m
+import console as con
+
+//Private declarations ----------------------------------------------------------------------------------------------
+.private
+   
+//Title
+string title="Mandelbrot set calculation"
+
+//Function declarations
+void mandelbrotset(short iter, float maxval,float x1,float x2,int stepsx,float y1,float y2,int stepsy)
+int calculatepoint(short iter,float maxval,float cx,float cy,ref bool overflow)
+
+//Implementation part -----------------------------------------------------------------------------------------------
+.implem
+
+//Main program
+main:
+
+  //Variables
+  const short iter=(short)1000
+  float maxval=1000
+  float x1=-2.1
+  float x2=1.0
+  int stepsx=180  
+  float y1=-1.2
+  float y2=1.2
+  int stepsy=90
+
+  //Message
+  con.println(title)
+  con.println("--- Main parameters ---")
+  con.println("iter  : "+iter.tostr())
+  con.println("maxval: "+maxval.tostr())
+  con.println("stepsx: "+stepsx.tostr())
+  con.println("stepsy: "+stepsy.tostr())
+  con.println("x-axis: "+x1.tostr()+" - "+x2.tostr())
+  con.println("y-axis: "+y1.tostr()+" - "+y2.tostr())
+
+  //Call mandelbrot set
+  mandelbrotset(iter,maxval,x1,x2,stepsx,y1,y2,stepsy)
+
+:main
+
+//Calculate point
+func int calculatepoint(short iter,float maxval,float cx,float cy,ref bool overflow):
+  
+  //Variables
+  long i
+  float x0
+  float y0
+  float x1
+  float y1
+  const int j=45
+
+  //Init loop
+  x0=cx
+  y0=cy
+  overflow=false
+
+  //Calculation loop
+  for(i=0 if (int)i<iter do i++):
+    x1=(x0*x0)-(y0*y0)+cx
+    y1=(2*x0*y0)+cy
+    if((x1*x1)+(y1*y1)>maxval*maxval): 
+      overflow=true
+      break 
+    else: 
+      x0=x1 
+      y0=y1 
+    :if
+  :for
+
+  //Return value
+  return (int)i+j-j
+
+:func  
+
+//Print mandelbrot set to console
+func void mandelbrotset(short iter,float maxval,float x1,float x2,int stepsx,float y1,float y2,int stepsy):
+
+  //Variables
+  float cx
+  float cy
+  int i
+  int j
+  int k
+  bool overflow
+  string line
+
+  //Print loop
+  for(j=0 if j<stepsy do j++):
+    line=""
+    for(i=0 if i<stepsx do i++):
+      cx=x1+i*(x2-x1)/stepsx
+      cy=y1+j*(y2-y1)/stepsy
+      overflow=false
+      k=calculatepoint(iter,maxval,cx,cy,overflow)
+      line+=(overflow?32+(k%94):32).tochr()
+    :for
+    con.println(line.left(stepsx))
+  :for
+
+:func

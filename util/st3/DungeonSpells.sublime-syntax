@@ -1,0 +1,65 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - ds
+scope: source.ds
+contexts:
+  main:
+    # Strings begin and end with quotes, and use backslashes as an escape character
+    - match: '"'
+      scope: punctuation.definition.string.begin.ds
+      push: double_quoted_string
+
+    # Raw strings beginning
+    - match: 'r"\['
+      scope: punctuation.definition.string.begin.ds
+      push: raw_string
+
+    # Comments begin with a '//' and finish at the end of the line
+    - match: '//'
+      scope: punctuation.definition.comment.ds
+      push: line_comment
+
+    # Keyword
+    - match: '(^|\b|\s)([.]libs|[.]public|[.]private|[.]implem|set|import|include|as|static|var|const|type|class|[.]publ|[.]priv|[:]class|allow|to|from|enum|[:]enum|void|main[:]|[:]main|func|[:]func|fmem|[:]fmem|oper|[:]oper|let|init|return|ref|if|elif|else|[:]if|while|[:]while|do|[:]loop|for|[:]for|walk|[:]walk|switch|when|default[:]|[:]switch|break|continue|syscall|sysfunc|dlfunc|dltype|array|index|on)($|\b|\s)'
+      scope: keyword.control.ds
+
+    # Built in types
+    - match: '(^|\b|\s)(bool|char|short|int|long|float|string)($|\b|\s)'
+      scope: keyword.control.ds
+
+    # Numbers 
+    - match: '(^|\b|\s)([-])?[0-9]*([.])?[0-9]*($|\b|\s)'
+      scope: constant.numeric.ds
+
+    # Numbers in scientific notation 
+    - match: '(^|\b|\s)([-])?[0-9]*([.])?[0-9]*[eE]([+]|[-])?[0-9]*($|\b|\s)'
+      scope: constant.numeric.ds
+
+    # Operators (^ operator is escaped with \x5E)
+    - match: '([+][+]|[-][-]|[.]|[!]|[~]|[*]|[/]|[%]|[+]|[-]|[<][<]|[>][>]|[<]|[<][=]|[>]|[>][=]|[=][=]|[!][=]|[&]|[\x5E]|[|]|[&][&]|[|][|]|[=]|[+][=]|[-][=]|[*][=]|[/][=]|[%][=]|[<][<][=]|[>][>][=]|[&][=]|[\x5E][=]|[|][=]|[?])'
+      scope: keyword.operator.ds
+
+    # Operator overloads
+    - match: '(\x5B[+][+]\x5D|\x5B[-][-]\x5D|\x5B[.]\x5D|\x5B[!]\x5D|\x5B[~]\x5D|\x5B[*]\x5D|\x5B[/]\x5D|\x5B[%]\x5D|\x5B[+]\x5D|\x5B[-]\x5D|\x5B[<][<]\x5D|\x5B[>][>]\x5D|\x5B[<]\x5D|\x5B[<][=]\x5D|\x5B[>]\x5D|\x5B[>][=]\x5D|\x5B[=][=]\x5D|\x5B[!][=]\x5D|\x5B[&]\x5D|\x5B[\x5E]\x5D|\x5B[\x5D|\x5B]\x5D|\x5B[&][&]\x5D|\x5B[\x5D|\x5B][\x5D|\x5B]\x5D|\x5B[=]\x5D|\x5B[+][=]\x5D|\x5B[-][=]\x5D|\x5B[*][=]\x5D|\x5B[/][=]\x5D|\x5B[%][=]\x5D|\x5B[<][<][=]\x5D|\x5B[>][>][=]\x5D|\x5B[&][=]\x5D|\x5B[\x5E][=]\x5D|\x5B[\x5D|\x5B][=]\x5D|\x5B[?]\x5D)'
+      scope: keyword.operator.ds
+
+  double_quoted_string:
+    - meta_scope: string.quoted.double.ds
+    - match: '\\.'
+      scope: constant.character.escape.ds
+    - match: '"'
+      scope: punctuation.definition.string.end.ds
+      pop: true
+
+  raw_string:
+    - meta_scope: string.raw.ds
+    - match: '\]"'
+      scope: punctuation.definition.string.end.ds
+      pop: true
+
+  line_comment:
+    - meta_scope: comment.line.ds
+    - match: $
+      pop: true

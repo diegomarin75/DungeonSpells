@@ -1,0 +1,314 @@
+//Dungeon Spells audio & graphics library
+set library=true
+
+//Public definitions
+.public
+
+//Standardlibrary version
+const string agl_version="1.0"
+
+//Display flags
+enum displayflag:
+  native=1        //Opens display in native full screen mode
+  fullscreen=2    //Opens display in full screen mode without currnt changing resolution
+  borderless=4    //Display without borders
+  centered=8      //Opens centered display
+  located=16      //Display location is undefined and set by host system
+  accelerated=32  //Force display HW acceleration
+  software=64     //Force software rendering
+  retracesync=128 //Display presentation synced with screen vertical retrace
+  resizable=256   //Window can be resizable
+:enum
+
+//system error codes
+enum errorcode:
+  ok=0
+  initerror
+  initdeviceerror
+  wrongversion
+  invaliddisphnd
+  unuseddisphnd
+  forbiddendisphnd
+  displayopenerror
+  createwindowerror
+  createrenderererror
+  setlogicalsizeerror
+  setviewporterror
+  setclipareaerror
+  clearerror
+  setcolorerror
+  getcolorerror
+  drawlineerror
+  drawpointerror
+  drawrecterror
+  drawfillrecterror
+  loadsystemfonterror
+  printcharerror
+  invalidfont
+  nocurrentdisplayset
+  invalidtxtrhnd
+  unusedtxtrhnd
+  forbiddentxtrhnd
+  imgloaderror
+  imgcreatetextureerror
+  setblendmoderror
+  setcolormoderror
+  setalphamoderror
+  rendererror
+  exrendererror
+:enum
+
+//Display Info
+const int titlelen=255
+class dispinfo:
+  char[titlelen] title
+  int left
+  int top
+  int width
+  int height
+:class
+
+//System raster fonts
+enum rasterfont:
+  mono10=0
+  mono12
+  mono14
+  mono16
+  mono18
+  vga
+  casio
+:enum
+
+//Raster font info
+const int fontnamelen=255
+class rasterfontinfo:
+  char[fontnamelen] codename
+  char[fontnamelen] fullname
+  int size
+  bool monospace
+  int width
+  int height
+  int minchar
+  int maxchar
+:class
+
+//Texure flip mode
+enum flipmode:
+  none
+  horizontal
+  vertical
+:enum
+
+//Texture blend mode
+enum blendmode:
+  none   //none
+  blend  //alpha blending
+  add    //additive blending
+  mod    //color modulation blending
+:enum
+
+//Rvent ids
+enum eventid:
+  dispshown         //window has been shown
+  disphidden        //window has been hidden
+  dispexposed       //window has been exposed and should be redrawn
+  dispmoved         //window has been moved to data1, data2
+  dispresized       //window has been resized to data1xdata2; this event is always preceded by sxdl_windowevent_size_changed
+  dispsizechanged   //window size has changed, either as a result of an api call or through the system or user changing the window size; this event is followed by sxdl_windowevent_resized if the size was changed by an external event, i.e. the user or the window manager
+  dispminimized     //window has been minimized
+  dispmaximized     //window has been maximized
+  disprestored      //window has been restored to normal size and position
+  dispenter         //window has gained mouse focus
+  displeave         //window has lost mouse focus
+  dispfocusgained   //window has gained keyboard focus
+  dispfocuslost     //window has lost keyboard focus
+  dispclose         //the window manager requests that the window be closed
+  disptakefocus     //window is being offered a focus (should sdl_setwindowinputfocus() on itself or a subwindow, or ignore) (>= sdl 2.0.5) 
+  keybpressed       //key is pressed
+  keybreleased      //key is released
+  keybinput         //keyboard key input (translated to utf-8)
+  notimplemented    //not implemented events fall here
+:enum
+
+//Keyboard scan codes
+enum scancode:
+  num_0; num_1; num_2; num_3; num_4; num_5; num_6; num_7; num_8; num_9; a; ac_back; ac_bookmarks; ac_forward; ac_home; ac_refresh; 
+  ac_search; ac_stop; again; alterase; apostrophe; application; audiomute; audionext; audioplay; audioprev; audiostop; b; backslash; 
+  backspace; brightnessdown; brightnessup; c; calculator; cancel; capslock; clear; clearagain; comma; computer; copy; crsel; 
+  currencysubunit; currencyunit; cut; d; decimalseparator; delete; displayswitch; down; e; eject; end; equals; escape; execute; 
+  exsel; f; f1; f10; f11; f12; f13; f14; f15; f16; f17; f18; f19; f2; f20; f21; f22; f23; f24; f3; f4; f5; f6; f7; f8; f9; find; 
+  g; grave; h; help; home; i; insert; j; k; kbdillumdown; kbdillumtoggle; kbdillumup; kp_0; kp_00; kp_000; kp_1; kp_2; kp_3; kp_4; 
+  kp_5; kp_6; kp_7; kp_8; kp_9; kp_a; kp_ampersand; kp_at; kp_b; kp_backspace; kp_binary; kp_c; kp_clear; kp_clearentry; kp_colon; 
+  kp_comma; kp_d; kp_dblampersand; kp_dblverticalbar; kp_decimal; kp_divide; kp_e; kp_enter; kp_equals; kp_equalsas400; kp_exclam; 
+  kp_f; kp_greater; kp_hash; kp_hexadecimal; kp_leftbrace; kp_leftparen; kp_less; kp_memadd; kp_memclear; kp_memdivide; kp_memmultiply; 
+  kp_memrecall; kp_memstore; kp_memsubtract; kp_minus; kp_multiply; kp_octal; kp_percent; kp_period; kp_plus; kp_plusminus; kp_power; 
+  kp_rightbrace; kp_rightparen; kp_space; kp_tab; kp_verticalbar; kp_xor; l; lalt; lctrl; left; leftbracket; lgui; lshift; m; mail; 
+  mediaselect; menu; minus; mode; mute; n; numlock; o; opr; out; p; pagedown; pageup; paste; pause; period; power; printscreen; 
+  prior; q; r; ralt; rctrl; enter; enter2; rgui; right; rightbracket; rshift; s; scrolllock; select; semicolon; separator; slash; 
+  sleep; space; stop; sysreq; t; tab; thousandsseparator; u; undo; unknown; up; v; volumedown; volumeup; w; www; x; y; z; international1; 
+  international2; international3; international4; international5; international6; international7; international8; international9; lang1; 
+  lang2; lang3; lang4; lang5; lang6; lang7; lang8; lang9; nonushash; notimplemented
+:enum
+
+//Event data structure
+class eventinfo:
+  eventid id
+  int disphandler
+  int dispx
+  int dispy
+  int keymodif
+  scancode code
+  int utf8code
+:class
+
+//Mapping of data types
+dltype<"aglib","AglDispInfo">   from dispinfo
+dltype<"aglib","AglSystemFont"> from rasterfont
+dltype<"aglib","AglFontInfo">   from rasterfontinfo
+dltype<"aglib","AglFlipMode">   from flipmode
+dltype<"aglib","AglBlendMode">  from blendmode
+dltype<"aglib","AglEventInfo">  from eventinfo
+dltype<"aglib","AglErrorCode">  from errorcode
+
+//Display management
+dlfunc<"aglib","DisplayOpen">               bool displayopen(string title,int x,int y,int width,int height,int flags,ref int disphnd)
+dlfunc<"aglib","DisplayClose">              bool displayclose(int disphnd)
+dlfunc<"aglib","GetDisplayInfo">            bool getdisplayinfo(int disphnd,ref dispinfo info)
+dlfunc<"aglib","SetCurrentDisplay">         bool setcurrentdisplay(int disphnd)
+dlfunc<"aglib","GetCurrentDisplay">         int getcurrentdisplay()
+dlfunc<"aglib","SetLogicalSize">            void setlogicalsize(int width,int height)
+dlfunc<"aglib","SetViewPort">               void setviewport(int x,int y,int width,int height)
+dlfunc<"aglib","SetClipArea">               void setcliparea(int x,int y,int width,int height)
+dlfunc<"aglib","DisplayShow">               void displayshow()
+                                            bool displayopen(string title,int x,int y,int width,int height,int flags)
+
+//Drawing functions
+dlfunc<"aglib","Clear">                     void clear()
+dlfunc<"aglib","SetColor">                  void setcolor(char r,char g,char b,char a)
+dlfunc<"aglib","DrawLine">                  void line(int x1,int y1,int x2,int y2)
+dlfunc<"aglib","SetPoint">                  void setpoint(int x,int y)
+dlfunc<"aglib","DrawRectangle">             void rectangle(int x1,int y1,int x2,int y2)
+dlfunc<"aglib","DrawFillRectangle">         void fillrectangle(int x1,int y1,int x2,int y2)
+dlfunc<"aglib","DrawCircle">                void circle(int x,int y,int r);
+dlfunc<"aglib","DrawFillCircle">            void fillcircle(int x,int y,int r);
+                                            void setcolor(int rgb,short alpha)
+                                            void setcolor(int rgb)
+
+//Raster fonts
+dlfunc<"aglib","SetFont">                   void setfont(rasterfont font,int scalex,int scaley)
+dlfunc<"aglib","SetFontForeColor">          void setfontforecolor(char r,char g,char b,char a)
+dlfunc<"aglib","SetFontBackColor">          void setfontbackcolor(char r,char g,char b,char a)
+dlfunc<"aglib","GetCurrentFont">            rasterfont getcurrentfont()
+dlfunc<"aglib","GetCurrentFontScaleX">      int getcurrentfontscalex()
+dlfunc<"aglib","GetCurrentFontScaleY">      int getcurrentfontscaley()
+dlfunc<"aglib","GetFontInfo">               bool getfontinfo(rasterfont font,ref rasterfontinfo info)
+dlfunc<"aglib","GetFontLines">              int getfontlines(rasterfont font)
+dlfunc<"aglib","GetFontColumns">            int getfontcolumns(rasterfont font)
+dlfunc<"aglib","SetFontOffset">             void setfontoffset(int offx,int offy)
+dlfunc<"aglib","PrintChar">                 void printchar(int cx,int cy,int chr)
+dlfunc<"aglib","Print">                     void print(int cx,int cy,string text)
+dlfunc<"aglib","PrintCharXY">               void printcharxy(int x,int y,int chr)
+dlfunc<"aglib","PrintXY">                   void printxy(int x,int y,string text)
+                                            void setfont(rasterfont font)
+                                            void setfontforecolor(int rgb,short alpha)
+                                            void setfontbackcolor(int rgb,short alpha)
+                                            void setfontforecolor(int rgb)
+                                            void setfontbackcolor(int rgb)
+
+//Texture management
+dlfunc<"aglib","LoadTexture">               bool loadtexture(string filename,ref int txtrhnd)
+dlfunc<"aglib","FreeTexture">               bool freetexture(int txtrhnd)
+dlfunc<"aglib","GetTextureSize">            void gettexturesize(int txtrhnd,ref int width,ref int height)
+dlfunc<"aglib","SetTextureRotation">        void settexturerotation(int txtrhnd,float angle,int rotx,int roty)
+dlfunc<"aglib","SetTextureFlipMode">        void settextureflipmode(int txtrhnd,flipmode flip)
+dlfunc<"aglib","SetTextureBlendMode">       void settextureblendmode(int txtrhnd,blendmode blend)
+dlfunc<"aglib","SetTextureColorModulation"> void settexturecolormodulation(int txtrhnd,char r,char g,char b)
+dlfunc<"aglib","SetTextureAlphaModulation"> void settexturealphamodulation(int txtrhnd,char a)
+dlfunc<"aglib","RenderTexture">             void rendertexture(int txtrhnd,int x,int y)
+dlfunc<"aglib","RenderTextureScaled">       void rendertexturescaled(int txtrhnd,int x,int y,int ax,int ay)
+dlfunc<"aglib","RenderTexturePart">         void rendertexturepart(int txtrhnd,int x,int y,int tx,int ty,int tax,int tay)
+dlfunc<"aglib","RenderTexturePartScaled">   void rendertexturepartscaled(int txtrhnd,int x,int y,int ax,int ay,int tx,int ty,int tax,int tay)
+
+//System events
+dlfunc<"aglib","HasEvents">                 bool hasevents()
+dlfunc<"aglib","GetEvent">                  void getevent(ref eventinfo event)
+dlfunc<"aglib","WaitEvent">                 void waitevent(int timeout)
+                                            void waitevent()
+//Generic
+dlfunc<"aglib","GetVersionString">          string getversion()
+dlfunc<"aglib","Error">                     errorcode error()
+dlfunc<"aglib","ErrorText">                 string errortext(errorcode code)
+dlfunc<"aglib","LastError">                 string lasterror()
+
+//Implementation
+.implem
+
+//Display open with setting of default display
+func bool displayopen(string title,int x,int y,int width,int height,int flags):
+  int disphnd=0
+  if(!displayopen(title,x,y,width,height,flags,disphnd)):
+    return false
+  :if
+  if(!setcurrentdisplay(disphnd)):
+    return false
+  :if
+  return true
+:func
+
+//Set font with default scale
+func void setfont(rasterfont font):
+  setfont(font,1,1)
+:func
+
+//Wait for event (no timeout)
+func void waitevent():
+  waitevent(0)
+:func
+
+//Set color
+func void setcolor(int rgb,short alpha):
+  char r=(char)(rgb>>16);
+  char g=(char)(rgb>>8);
+  char b=(char)(rgb);
+  setcolor(r,g,b,(char)alpha)
+:func
+
+//Set color
+func void setcolor(int rgb):
+  char r=(char)(rgb>>16);
+  char g=(char)(rgb>>8);
+  char b=(char)(rgb);
+  setcolor(r,g,b,(char)255)
+:func
+
+//Set font fore color
+func void setfontforecolor(int rgb,short alpha):
+  char r=(char)(rgb>>16);
+  char g=(char)(rgb>>8);
+  char b=(char)(rgb);
+  setfontforecolor(r,g,b,(char)alpha)
+:func
+
+//Set font back color
+func void setfontbackcolor(int rgb,short alpha):
+  char r=(char)(rgb>>16);
+  char g=(char)(rgb>>8);
+  char b=(char)(rgb);
+  setfontbackcolor(r,g,b,(char)alpha)
+:func
+
+//Set font fore color
+func void setfontforecolor(int rgb):
+  char r=(char)(rgb>>16);
+  char g=(char)(rgb>>8);
+  char b=(char)(rgb);
+  setfontforecolor(r,g,b,(char)255)
+:func
+
+//Set font back color
+func void setfontbackcolor(int rgb):
+  char r=(char)(rgb>>16);
+  char g=(char)(rgb>>8);
+  char b=(char)(rgb);
+  setfontbackcolor(r,g,b,(char)255)
+:func

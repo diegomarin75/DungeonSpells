@@ -1,0 +1,39 @@
+//Libraries ----------------------------------------------------------------------------------------------------------
+.libs
+import console as con
+import dtime as dt
+
+//Implementation part -----------------------------------------------------------------------------------------------
+.implem
+
+//Main program
+main:
+
+  //Start
+  dt.time start=dt.gettime()
+
+  //Variables
+  int i
+  int j
+  int z
+  int max1=10000
+  int max2=1000
+  int cons=2
+
+  //Message
+  z=0
+  i=0
+  while(i<max1):
+    j=0
+    while(j<max2):
+      z=cons*z+j
+      j++
+    :while
+    i++
+  :while
+
+  //Elapsed time
+  dt.time end=dt.gettime()
+  con.println("DS Benchmark: "+(end-start).inseconds().tostr()+"s")
+
+:main

@@ -1,0 +1,225 @@
+//Mandelbrot on graphic screen using dynamic library aglib
+
+//Libs section ------------------------------------------------------------------------------------------------------
+.libs
+
+//Standard library
+import "system" as sys
+import "console" as con
+import "aglib" as gl
+
+//Private declarations ----------------------------------------------------------------------------------------------
+.private
+   
+//Function declarations
+void mandelbrotset(short iter, float maxval,float x1,float x2,int stepsx,float y1,float y2,int stepsy)
+int calculatepoint(short iter,float maxval,float cx,float cy,ref bool overflow)
+
+//Implementation part -----------------------------------------------------------------------------------------------
+.implem
+
+//Main program
+main:
+
+  //Variables
+  int x
+  int y
+  int i
+  int j
+  short iter=(short)100
+  float maxval=1000
+  float x1=-2.1
+  float x2=1.0
+  int stepsx=1000
+  float y1=-1.2
+  float y2=1.2
+  int stepsy=500
+
+  //Print subsystem version
+  con.println("Hostsystem: "+sys.gethostsystemname())
+  con.println("AGL version: "+gl.getversion())
+
+  //Setup screen
+  if(!gl.displayopen("Mandelbrot",0,0,stepsx,stepsy,(int)gl.displayflag.located|(int)gl.displayflag.software)):
+    con.println("Unable to open display: "+gl.lasterror())
+    sys.exit()
+  :if
+
+  //Simple graphics
+  gl.setcolor((char)255,(char)255,(char)255,(char)255)
+  gl.line(0,0,stepsx,stepsy)
+  gl.line(stepsx,0,0,stepsy)
+  gl.rectangle(300,50,350,80)
+  gl.fillrectangle(400,50,450,80)
+  gl.circle(50,50,20);
+  gl.fillcircle(100,100,20);
+  gl.displayshow()
+  sys.delay(1000)
+
+  //Font testing
+  gl.setfont(gl.rasterfont.casio,1,1)
+  gl.setfontforecolor((char)255,(char)0,(char)0,(char)255)
+  gl.setfontbackcolor((char)80,(char)80,(char)80,(char)0)
+  gl.printxy(0,0,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.setfont(gl.rasterfont.casio,2,2)
+  gl.setfontforecolor((char)0,(char)255,(char)0,(char)255)
+  gl.printxy(0,40,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.setfont(gl.rasterfont.casio,3,4)
+  gl.setfontforecolor((char)0,(char)0,(char)255,(char)255)
+  gl.printxy(0,80,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.setfont(gl.rasterfont.casio,4,4)
+  gl.setfontforecolor((char)180,(char)180,(char)180,(char)255)
+  gl.printxy(0,160,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.setfont(gl.rasterfont.casio,4,8)
+  gl.setfontbackcolor((char)255,(char)0,(char)0,(char)255)
+  gl.printxy(0,210,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.setfont(gl.rasterfont.casio,8,4)
+  gl.setfontbackcolor((char)0,(char)255,(char)0,(char)255)
+  gl.printxy(0,320,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.setfont(gl.rasterfont.casio,8,4)
+  gl.setfontbackcolor((char)0,(char)0,(char)255,(char)255)
+  gl.printxy(0,360,"01_!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+
+  gl.displayshow()
+  if(gl.error()!=gl.errorcode.ok):
+    con.println(gl.lasterror())
+    sys.exit()
+  :if
+  sys.delay(5000)
+
+  //Text buffering speed
+  gl.setfont(gl.rasterfont.mono12)
+  for(i=0 if i<500 do i++):
+    gl.clear()
+    for(y=0 if y<stepsy do y=y+12):
+      for(x=0 if x<stepsx do x=x+7):
+        gl.printxy(x,y,(i%2==0?"A":"."))
+      :for
+    :for
+    gl.printxy(0,0,i.tostr())
+    gl.displayshow()
+  :for
+
+  //Parameters
+  for(j=0 if j<1 do j++):
+  for(i=0 if i<stepsx do i++):
+    gl.setfont(gl.rasterfont.mono10)
+    gl.printxy(i,0,"!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+    gl.setfont(gl.rasterfont.mono12)
+    gl.printxy(i,25,"!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+    gl.setfont(gl.rasterfont.mono14)
+    gl.printxy(i,50,"!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+    gl.setfont(gl.rasterfont.mono18)
+    gl.printxy(i,75,"!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+    gl.setfont(gl.rasterfont.vga)
+    gl.printxy(i,100,"!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+    gl.setfont(gl.rasterfont.casio)
+    gl.printxy(i,125,"!@#$%&/()=?'^+*[]{},;.:-_<>ABCDEFGHIJKLKMNOPQRSTabcdefghijklkmnopqrst0123456789-_Mandelbrot")
+    gl.displayshow()
+  :for
+  :for
+  if(gl.error()!=gl.errorcode.ok):
+    con.println(gl.lasterror())
+    sys.exit()
+  :if
+  
+  //Call mandelbrot set
+  mandelbrotset(iter,maxval,x1,x2,stepsx,y1,y2,stepsy)
+
+  //std.delay(2000)
+
+:main
+
+//Calculate point
+func int calculatepoint(short iter,float maxval,float cx,float cy,ref bool overflow):
+  
+  //Variables
+  int i
+  float x0
+  float y0
+  float x1
+  float y1
+
+  //Init loop
+  x0=cx
+  y0=cy
+  overflow=false
+  
+  //Calculation loop
+  for(i=0 if i<iter do i++):
+    x1=(x0*x0)-(y0*y0)+cx
+    y1=(2*x0*y0)+cy
+    if((x1*x1)+(y1*y1)>maxval*maxval): 
+      overflow=true
+      break 
+    else: 
+      x0=x1 
+      y0=y1 
+    :if
+  :for
+
+  //Return value
+  return i
+
+:func  
+
+//Print mandelbrot set to console
+func void mandelbrotset(short iter,float maxval,float x1,float x2,int stepsx,float y1,float y2,int stepsy):
+
+  //Variables
+  float cx
+  float cy
+  int i
+  int j
+  int k
+  bool overflow
+
+  //Parameters
+  gl.setcolor((char)255,(char)255,(char)255,(char)255)
+  gl.setfont(gl.rasterfont.mono10)
+  gl.print(0,0,"--- Main parameters ---")
+  gl.print(0,1,"iter  : "+iter.tostr())
+  gl.print(0,2,"maxval: "+maxval.tostr())
+  gl.print(0,3,"stepsx: "+stepsx.tostr())
+  gl.print(0,4,"stepsy: "+stepsy.tostr())
+  gl.print(0,5,"x-axis: "+x1.tostr()+" - "+x2.tostr())
+  gl.print(0,6,"y-axis: "+y1.tostr()+" - "+y2.tostr())
+  gl.displayshow()
+  
+  //Print loop
+  for(j=0 if j<stepsy do j++):
+    for(i=0 if i<stepsx do i++):
+      cx=x1+i*(x2-x1)/stepsx
+      cy=y1+j*(y2-y1)/stepsy
+      overflow=false
+      k=calculatepoint(iter,maxval,cx,cy,overflow)
+      if(overflow):
+        gl.setcolor((char)(k%255),(char)(k%255),(char)(k%255),(char)0)
+      else:
+        gl.setcolor((char)0,(char)0,(char)0,(char)0)
+      :if
+      gl.setpoint(i,j)
+    :for
+    gl.displayshow()
+  :for
+
+  //Parameters
+  gl.setcolor((char)255,(char)255,(char)255,(char)255)
+  gl.setfont(gl.rasterfont.mono10)
+  gl.print(0,0,"--- Main parameters ---")
+  gl.print(0,1,"iter  : "+iter.tostr())
+  gl.print(0,2,"maxval: "+maxval.tostr())
+  gl.print(0,3,"stepsx: "+stepsx.tostr())
+  gl.print(0,4,"stepsy: "+stepsy.tostr())
+  gl.print(0,5,"x-axis: "+x1.tostr()+" - "+x2.tostr())
+  gl.print(0,6,"y-axis: "+y1.tostr()+" - "+y2.tostr())
+  gl.displayshow()
+  //std.delay(5000)
+  
+:func
