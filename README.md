@@ -2,6 +2,8 @@
 
 **Dungeon Spells compiler and runtime environment**
 
+![plot](./screenshot.png)
+
 ## What is it?
 
 Dungeon Spells is a strongly an statically typed, object oriented and structured programming language. It is targeted to run in compiled form against its virtual machine. 
