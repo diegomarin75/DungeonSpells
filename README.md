@@ -2976,6 +2976,7 @@ There are options while compiling or executing programs that have default values
 The configuration file "ds.config" is searched on the same path where the Dungeon Spells are located (dunc, dunr, duns). It is not mandatory to have one, but if it appears the options that we can have inside are the following:
 
 |Option                              |Description|Example value|
+|------------------------------------|-----------|-------------|
 |[system.dynlibpath] = "<string>"    |This the path where dynamic link libraries (.dll/.so) files are searched by default, path is relative to the main executables path (dunc,dunr,duns). There are libraries, like the audio graphics library that need additional binaries (.dll or .so files) in order to perform their tasks (see  [Interface to C++ code](#interface-to-c++-code)).|"./"|
 |[compiler.enableasmfile] = <boolean>|Generate assembler file when compiling source code|false|
 |[compiler.maxerrornr] = <integer>   |Maximun compiling errors to report before finishing compilation of source code|10|
